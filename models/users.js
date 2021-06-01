@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const UserSchema = Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  email: { type: String, require: true },
+  email: { type: String, required: true },
+  password: {type:String, required:true},
   gender: { type: String, enum: ["Male", "Female", "Other"] },
   role: {type: String, required:true},
   role_id: [{ type: Schema.Types.ObjectId, ref: 'roles' }],

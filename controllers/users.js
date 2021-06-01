@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Courses = require('../models/courses')
+const bcrypt = require('bcryptjs')
 const { Users, Roles } = require('../models/users')
 
 const userController = {};
@@ -64,21 +65,25 @@ userController.getOne = async (req, res) => {
 userController.post = async (req, res) => {
     const user = new Users(req.body)
     const role = req.body.role.toLowerCase()
-    // if(role!="faculty" || role!= "student"){
-    //     res.send("Enter the proper Role from: Student, Faculty")
-    // }
     const roleObject = (await Roles.find()).filter(roles=>{
         return roles.name.toLowerCase() == role
     })
-    
-    
+       
     try {
-        var re = /\S+@\S+\.\S+/;
-        if (!re.test(req.body.email)) {
+        let email = req.body.email
+        let password = req.body.password
+        let re = /\S+@\S+\.\S+/;
+        if (!re.test(email)) {
             res.send("Email Id Not Valid")
+        }
+        else if(password.length<5 || password.length>12){
+            res.send("Password should be atleast 5 and atmost 12 char long")
         }
         else {
             user.role_id = roleObject[0]._id
+            const salt = await bcrypt.genSalt()
+            const hashedPassword = await bcrypt.hash(password, salt)
+            user.password = hashedPassword
             await user.save()
             console.log(user.student_code)
             res.send("Posting the data")
