@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require('express')
 const routes = require('./routes/index')
 const mongoose = require('mongoose')
+const jwt = require('./helpers/jwt')
 const app = express()
 
 // connecting with the database
@@ -14,6 +15,9 @@ db.on('open',()=>{
 // body parsers
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
+
+// authenticating with jwt token
+app.use(jwt)
 
 // getting routes 
 app.use(routes)

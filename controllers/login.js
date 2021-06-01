@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const { Users, Roles } = require('../models/users');
 const { request } = require('express');
 
@@ -23,7 +24,12 @@ loginController.login = async (req, res) => {
             const userPassword = user.password
             const isCorrect = await bcrypt.compare(password, userPassword)
             if (isCorrect) {
-                res.json(user)
+                const userDetails = {
+                    email:email,
+                    password:password
+                }
+                const accessToken = jwt.sign(userDetails, process.env.SECRET)
+                res.json({"accessToken":accessToken})
             }
             else {
                 res.sendStatus(401)
